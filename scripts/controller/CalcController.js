@@ -1,80 +1,80 @@
 class CalcController {
+  constructor() {
+    this._locale = "pt-BR";
+    this._displayCalcEl = document.querySelector("#display");
+    this._dateEl = document.querySelector("#data");
+    this._timeEl = document.querySelector("#hora");
+    this._currentDate;
+    this.initialize();
+    this.initButtonsEvents();
+  }
 
-    constructor() {
+  initialize() {
+    this.setDisplayDateTime();
 
-        this._locale = "pt-BR";
-        this._displayCalcEl = document.querySelector("#display");
-        this._dateEl = document.querySelector("#data");
-        this._timeEl = document.querySelector("#hora");
-        this._currentDate;
-        this.initialize();
-        this.initButtonsEvents();
+    setInterval(() => {
+      this.setDisplayDateTime();
+    }, 1000);
+  }
 
-    }
+  addEventListenerAll(element, events, fn) {
+    events.split(" ").forEach((event) => {
+      element.addEventListener(event, fn, false);
+    });
+  }
 
-    initialize() {
+  initButtonsEvents() {
+    let buttons = document.querySelectorAll("#buttons > g, #parts > g");
 
-        this.setDisplayDateTime();
+    buttons.forEach((btn, index) => {
+      this.addEventListenerAll(btn, "click drag", (e) => {
+        console.log(btn.className.baseVal.replace("btn-", ""));
+      });
 
-        setInterval(() => {
+      this.addEventListenerAll(btn, "mouseover mousedown mouseup", (e) => {
+        btn.style.cursor = "pointer";
+      });
+    });
+  }
 
-            this.setDisplayDateTime();
+  setDisplayDateTime() {
+    this.displayDate = this.currentDate.toLocaleDateString(this._locale, {
+      day: "2-digit",
+      month: "long",
+      year: "numeric",
+    });
+    this.displayTime = this.currentDate.toLocaleTimeString(this._locale);
+  }
 
-        }, 1000);
-    }
+  get displayTime() {
+    return this._timeEl.innerHTML;
+  }
 
-    initButtonsEvents() {
+  set displayTime(value) {
+    return (this._timeEl.innerHTML = value);
+  }
 
-        let buttons = document.querySelectorAll("#buttons > g, #parts > g");
+  get displayDate() {
+    return this._dateEl.innerHTML;
+  }
 
-        buttons.forEach(btn => {
+  set displayDate(value) {
+    return (this._dateEl.innerHTML = value);
+  }
 
-            btn.addEventListener("click", e => {
-                console.log(btn.className.baseVal.replace("btn-", ""));
-            });
-        })
-    }
+  get displayCalc() {
+    return this._displayCalcEl.innerHTML;
+  }
 
-    setDisplayDateTime() {
+  set displayCalc(value) {
+    this._displayCalcEl.innerHTML = value;
+  }
 
-        this.displayDate = this.currentDate.toLocaleDateString(this._locale, {
-            day: "2-digit",
-            month: "long",
-            year: "numeric"
-        });
-        this.displayTime = this.currentDate.toLocaleTimeString(this._locale);
+  get currentDate() {
+    return new Date();
+  }
 
-    }
-
-    get displayTime() {
-        return this._timeEl.innerHTML;
-    }
-
-    set displayTime(value) {
-        return this._timeEl.innerHTML = value;
-    }
-
-    get displayDate() {
-        return this._dateEl.innerHTML;
-    }
-
-    set displayDate(value) {
-        return this._dateEl.innerHTML = value;
-    }
-
-    get displayCalc() {
-        return this._displayCalcEl.innerHTML;
-    }
-
-    set displayCalc(value) {
-        this._displayCalcEl.innerHTML = value;
-    }
-
-    get currentDate() {
-        return new Date();
-    }
-
-    set currentDate(value) {
-        this._currentDate = value;
-    }
+  set currentDate(value) {
+    this._currentDate = value;
+  }
 }
