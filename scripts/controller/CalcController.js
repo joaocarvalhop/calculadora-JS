@@ -1,5 +1,7 @@
 class CalcController {
   constructor() {
+    this._lastOperator = "";
+    this._lastNumber = "";
     this._operation = [];
     this._locale = "pt-BR";
     this._displayCalcEl = document.querySelector("#display");
@@ -50,14 +52,33 @@ class CalcController {
     return ["+", "-", "*", "/", "%"].indexOf(value) > -1;
   }
 
+  getResult() {
+    return eval(this._operation.join(""));
+  }
+
   calc() {
     let last = "";
 
-    if (this._operation.length > 3) {
-      last = this._operation.pop();
+    this._lastOperator = this.getLastItem();
+
+    if (this._operation.length < 3) {
+
+      let firstItem = this._operation[0];
+      this._operation = [firstItem, this._lastOperator, this._lastNumber];
     }
 
-    let result = eval(this._operation.join(""));
+    if (this._operation.length > 3) {
+      last = this._operation.pop();
+      this._lastNumber = this.getResult();
+    } else if (this._operation.length == 3) {
+      
+      this._lastNumber = this.getLastItem(false);
+    }
+
+    console.log("lastNumber", this._lastNumber);
+    console.log("lastOperator", this._lastOperator);
+
+    let result = this.getResult();
 
     if (last == "%") {
       result /= 100;
@@ -80,15 +101,29 @@ class CalcController {
     }
   }
 
-  setLastNumberOnDisplay() {
-    let lastNumber;
+  // por padrão ele vai sempre retornar um operador
+  getLastItem(isOperator = true) {
+    let lastItem;
 
     for (let i = this._operation.length - 1; i >= 0; i--) {
-      if (!this.isOperator(this._operation[i])) {
-        lastNumber = this._operation[i];
+      if (this.isOperator(this._operation[i]) == isOperator) {
+        lastItem = this._operation[i];
         break;
       }
     }
+
+    // não encontrou o último item
+    if (!lastItem) {
+      // se lastItem for true ? -> então e : -> se não
+      lastItem = (isOperator) ? this._lastOperator : this._lastNumber;
+    }
+
+    return lastItem;
+  }
+
+  setLastNumberOnDisplay() {
+    let lastNumber = this.getLastItem(false);
+
     if (!lastNumber) lastNumber = 0;
 
     this.displayCalc = lastNumber;
