@@ -30,6 +30,8 @@ class CalcController {
 
   clearAll() {
     this._operation = [];
+    this._lastNumber = "";
+    this._lastOperator = "";
 
     this.setLastNumberOnDisplay();
   }
@@ -74,9 +76,6 @@ class CalcController {
       
       this._lastNumber = this.getLastItem(false);
     }
-
-    console.log("lastNumber", this._lastNumber);
-    console.log("lastOperator", this._lastOperator);
 
     let result = this.getResult();
 
@@ -133,8 +132,6 @@ class CalcController {
     if (isNaN(this.getLastOperation())) {
       if (this.isOperator(value)) {
         this.setLastOperation(value);
-      } else if (isNaN(value)) {
-        console.log("Outra coisa", value);
       } else {
         this.pushOperator(value);
         this.setLastNumberOnDisplay();
@@ -144,7 +141,7 @@ class CalcController {
         this.pushOperator(value);
       } else {
         let newValue = this.getLastOperation().toString() + value.toString();
-        this.setLastOperation(parseInt(newValue));
+        this.setLastOperation(parseFloat(newValue));
 
         this.setLastNumberOnDisplay();
       }
@@ -153,6 +150,19 @@ class CalcController {
 
   setError() {
     this.displayCalc = "Error";
+  }
+
+  addDot() {
+
+    let lastOperation = this.getLastOperation();
+
+    if (this.isOperator(lastOperation) || !lastOperation) {
+      this.pushOperator("0.");
+    } else {
+      this.setLastOperation(lastOperation.toString() + ".");
+    }
+
+    this.setLastNumberOnDisplay();
   }
 
   execBtn(value) {
@@ -190,7 +200,7 @@ class CalcController {
         break;
 
       case "ponto":
-        this.addOperation(".");
+        this.addDot();
         break;
 
       case "0":
