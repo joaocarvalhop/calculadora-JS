@@ -141,7 +141,7 @@ class CalcController {
         this.pushOperator(value);
       } else {
         let newValue = this.getLastOperation().toString() + value.toString();
-        this.setLastOperation(parseFloat(newValue));
+        this.setLastOperation(newValue);
 
         this.setLastNumberOnDisplay();
       }
@@ -155,6 +155,10 @@ class CalcController {
   addDot() {
 
     let lastOperation = this.getLastOperation();
+
+    // split() é responsável por dividir a string e transforma em arrays
+    // se lastOperation for string procure o ponto no array e verifique se é > -1 
+    if (typeof lastOperation === "string" && lastOperation.split("").indexOf(".") > -1) return;
 
     if (this.isOperator(lastOperation) || !lastOperation) {
       this.pushOperator("0.");
