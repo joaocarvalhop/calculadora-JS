@@ -67,7 +67,7 @@ class CalcController {
 
   initKeyBoard() {
     document.addEventListener("keyup", (e) => {
-      this._audio.play();
+      this.playAudio();
 
       switch (e.key) {
         case "Escape":
@@ -265,7 +265,7 @@ class CalcController {
   }
 
   execBtn(value) {
-    this._audio.play();
+    this.playAudio();
 
     switch (value) {
       case "ac":
@@ -368,6 +368,11 @@ class CalcController {
   }
 
   set displayCalc(value) {
+    if (value.toString().length > 10) {
+      this.setError();
+      return false;
+    }
+
     this._displayCalcEl.innerHTML = value;
   }
 
