@@ -11,6 +11,7 @@ class CalcController {
     this.initialize();
     this.initButtonsEvents();
     this.initKeyBoard();
+    this.pasteFromClipBoard();
   }
 
   initialize() {
@@ -23,19 +24,39 @@ class CalcController {
     this.setLastNumberOnDisplay();
   }
 
+  copyToClipBoard() {
+    let input = document.createElement("input");
+
+    input.value = this.displayCalc;
+
+    document.body.appendChild(input);
+
+    input.select();
+
+    document.execCommand("Copy");
+
+    input.remove();
+  }
+
+  pasteFromClipBoard() {
+    document.addEventListener("paste", (e) => {
+      let text = e.clipboardData.getData("Text");
+
+      this.displayCalc = parseFloat(text);
+    });
+  }
+
   initKeyBoard() {
-
-    document.addEventListener("keyup", e => {
-
+    document.addEventListener("keyup", (e) => {
       switch (e.key) {
         case "Escape":
           this.clearAll();
           break;
-  
+
         case "Backspace":
           this.clearEntry();
           break;
-  
+
         case "+":
         case "-":
         case "*":
@@ -43,17 +64,17 @@ class CalcController {
         case "%":
           this.addOperation(e.key);
           break;
-  
+
         case "=":
         case "Enter":
           this.calc();
           break;
-  
+
         case ",":
         case ".":
           this.addDot();
           break;
-  
+
         case "0":
         case "1":
         case "2":
@@ -65,6 +86,10 @@ class CalcController {
         case "8":
         case "9":
           this.addOperation(parseInt(e.key));
+          break;
+
+        case "c":
+          if (e.ctrlKey) this.copyToClipBoard();
           break;
       }
     });
@@ -112,7 +137,6 @@ class CalcController {
     this._lastOperator = this.getLastItem();
 
     if (this._operation.length < 3) {
-
       let firstItem = this._operation[0];
       this._operation = [firstItem, this._lastOperator, this._lastNumber];
     }
@@ -121,7 +145,6 @@ class CalcController {
       last = this._operation.pop();
       this._lastNumber = this.getResult();
     } else if (this._operation.length == 3) {
-      
       this._lastNumber = this.getLastItem(false);
     }
 
@@ -162,7 +185,7 @@ class CalcController {
     // não encontrou o último item
     if (!lastItem) {
       // se lastItem for true ? -> então e : -> se não
-      lastItem = (isOperator) ? this._lastOperator : this._lastNumber;
+      lastItem = isOperator ? this._lastOperator : this._lastNumber;
     }
 
     return lastItem;
@@ -201,12 +224,15 @@ class CalcController {
   }
 
   addDot() {
-
     let lastOperation = this.getLastOperation();
 
     // split() é responsável por dividir a string e transforma em arrays
-    // se lastOperation for string procure o ponto no array e verifique se é > -1 
-    if (typeof lastOperation === "string" && lastOperation.split("").indexOf(".") > -1) return;
+    // se lastOperation for string procure o ponto no array e verifique se é > -1
+    if (
+      typeof lastOperation === "string" &&
+      lastOperation.split("").indexOf(".") > -1
+    )
+      return;
 
     if (this.isOperator(lastOperation) || !lastOperation) {
       this.pushOperator("0.");
